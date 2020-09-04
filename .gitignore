@@ -50,9 +50,11 @@ sjob-**
 # MAC Files
 .DS_Store
 
-Application Files
+# Application Files
 /resources
 felix-cache/
 
 tmp*
 workspace*
+
+

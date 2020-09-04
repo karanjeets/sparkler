@@ -1,0 +1,3 @@
+[submodule "sparkler-ui/src/banana"]
+	path = sparkler-ui/src/banana
+	url = https://github.com/lucidworks/banana.git
