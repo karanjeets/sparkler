@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
+import com.typesafe.sbt.SbtNativePackager.autoImport._
+import com.typesafe.sbt.packager.archetypes.scripts.BashStartScriptPlugin.autoImport._
+import com.typesafe.sbt.packager.archetypes.scripts.BatStartScriptPlugin.autoImport._
 import com.typesafe.sbt.packager.universal.UniversalPlugin.autoImport.Universal
-import sbt._
+import sbt.{Def, _}
 import sbt.Keys._
 import sbt.Resolver.mavenLocal
 import sbtassembly.AssemblyPlugin.autoImport._
 
 object Settings {
-  lazy val organization = "edu.usc.irds.sparkler"
-  lazy val version = "0.2.1-SNAPSHOT"
-  lazy val maintainer = "irds-l@mymaillists.usc.edu"
+  lazy val projectOrganization = "edu.usc.irds.sparkler"
+  lazy val projectMaintainer = "irds-l@mymaillists.usc.edu"
+  lazy val confDir = "conf"
+  lazy val binDir = "bin"
   lazy val buildDir = "build"
   lazy val pluginsDir = "plugins"
-  lazy val common = Seq(
-    autoScalaLibrary := false,
+  lazy val cmdAlias = addCommandAlias(
+    "package", "universal:packageBin"
+  ) ++ addCommandAlias(
+    "release", "release with-defaults"
+  )
+  lazy val common = cmdAlias ++ Seq(
+    maintainer in Universal := projectMaintainer,
+    publish / skip := true,
+    makeBatScripts := Seq(),
+    makeBashScripts := Seq(),
     scalacOptions ++=  Seq(
       "-unchecked",
       "-feature",
@@ -49,20 +61,16 @@ object Settings {
       "Scala-Tools Snapshots" at "https://scala-tools.org/repo-snapshots/"
     )
   )
-  lazy val plugin = common ++ baseAssemblySettings ++ Seq(
-      //assemblyJarName in assembly := s"${name.value}-${Settings.version}.jar",
-      assemblyOutputPath in assembly := file(".") / buildDir / pluginsDir / s"${name.value}-${Settings.version}.jar",
-      mappings in Universal := {
-        val universalMappings = (mappings in Universal).value
-        val fatJar = (assembly in Compile).value
-        universalMappings :+ (fatJar -> ("lib/" + fatJar.getName))
-      },
-      // Discard META-INF as it's a very common conflict
-      // Others, keep the first copy on merge
-      assemblyMergeStrategy in assembly := {
-        case PathList("META-INF", _ @ _*) => MergeStrategy.discard
-        case _ => MergeStrategy.last
-      }
+  lazy val assemblyProject = common ++ baseAssemblySettings ++ Seq(
+    mappings in Universal := {
+      val universalMappings = (mappings in Universal).value
+      val fatJar = (assembly in Compile).value
+      universalMappings :+ (fatJar -> ("lib/" + fatJar.getName))
+    }
+  )
+  lazy val plugin = assemblyProject ++ Seq(
+    autoScalaLibrary := false,
+    assemblyOutputPath in assembly := file(".") / buildDir / pluginsDir / s"${name.value}-${(version in ThisBuild).value}.jar"
   )
 
   def pluginManifest(id: String, className: String,
@@ -71,8 +79,8 @@ object Settings {
       packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
         "Plugin-Id" -> id,
         "Plugin-Class" -> className,
-        "Plugin-Version" -> version,
-        "Plugin-Provider" -> organization,
+        "Plugin-Version" -> (version in ThisBuild).value,
+        "Plugin-Provider" -> projectOrganization,
         "Plugin-Dependencies" -> dependencies.mkString(",")
       )
     )

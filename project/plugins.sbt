@@ -17,3 +17,6 @@
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.7.4")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "2.0.0-RC3-3")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")

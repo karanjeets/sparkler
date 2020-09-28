@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-organization in ThisBuild := Settings.organization
-version in ThisBuild := Settings.version
-maintainer in ThisBuild := Settings.maintainer
-
-// spark 2.4.5 now come pre-build with scala 2.12 @ https://archive.apache.org/dist/spark/spark-2.4.5/
-scalaVersion in ThisBuild := "2.12.12"
+organization := Settings.projectOrganization
+maintainer := Settings.projectMaintainer
 
 // Scala/Java Build Options
+// spark 2.4.5 now come pre-build with scala 2.12 @ https://archive.apache.org/dist/spark/spark-2.4.5/
+scalaVersion in ThisBuild := "2.12.12"
 scalacOptions in ThisBuild += "-target:jvm-1.8"
 javacOptions in (Compile, doc) in ThisBuild ++= Seq("-source", "1.8")
 javacOptions in (Compile, compile) ++= Seq("-target", "1.8")
@@ -41,8 +39,6 @@ developers := List(
   )
 )
 
-lazy val plugins = ProjectRef(file("./"), "plugins")
-
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging)
   .settings(
@@ -57,10 +53,10 @@ lazy val api = (project in file("sparkler-api"))
     Settings.common,
     name := "sparkler-api",
     libraryDependencies ++= Seq(
-      Dependencies.Slf4j.api,
-      Dependencies.jsonSimple,
+      Dependencies.jsonSimple exclude("junit", "junit"),
       Dependencies.nutch exclude("*", "*"),
-      Dependencies.Slf4j.log4j12,
+//      Dependencies.Slf4j.api,
+//      Dependencies.Slf4j.log4j12,
       Dependencies.snakeYaml,
       Dependencies.Solr.solrj,
 
@@ -80,22 +76,37 @@ lazy val app = (project in file("sparkler-app"))
     Settings.common,
     name := "sparkler-app",
     libraryDependencies ++= Seq(
+      // TODO: Only keep necessary dependencies. Rest all should be included as plugin. Eg: extractors
       Dependencies.args4j,
       Dependencies.commonsValidator,
-      Dependencies.Jackson.databind,
+      Dependencies.Jackson.databind exclude("org.slf4j", "slf4j-api"),
       Dependencies.Jackson.core,
-      Dependencies.jsonSimple,
-      Dependencies.kafkaClients,
-      Dependencies.nutch exclude("*", "*"),
+      //Dependencies.jsonSimple,
+      Dependencies.kafkaClients exclude("org.slf4j", "slf4j-api"),
+      //Dependencies.nutch exclude("*", "*"),
       Dependencies.pf4j,
-      Dependencies.Slf4j.api,
-      Dependencies.Slf4j.log4j12,
-      Dependencies.snakeYaml,
+      //Dependencies.Slf4j.api,
+      //Dependencies.Slf4j.log4j12,
+      //Dependencies.snakeYaml,
       Dependencies.Solr.core,
-      Dependencies.Solr.solrj,
+      //Dependencies.Solr.solrj,
       Dependencies.sparkCore,
       Dependencies.tikaParsers,
-    )
+    ),
+    packageBin in Universal := {
+      // Move sparkler-app & its dependencies to {Settings.buildDir}
+      val fileMappings = (mappings in Universal).value
+      val buildLocation = file(".") / Settings.buildDir / s"${name.value}-${(version in ThisBuild).value}"
+      fileMappings foreach {
+        case (file, name) => IO.move(file, buildLocation / name)
+      }
+
+      // Move conf & bin to {Settings.buildDir}
+      IO.copyDirectory(file(".") / Settings.confDir, file(".") / Settings.buildDir / Settings.confDir)
+      IO.copyDirectory(file(".") / Settings.binDir, file(".") / Settings.buildDir / Settings.binDir)
+
+      buildLocation
+    }
   )
   .dependsOn(api)
 
@@ -111,6 +122,8 @@ lazy val testsBase = (project in file("sparkler-tests-base"))
       Dependencies.Slf4j.log4j12,
     )
   )
+
+lazy val plugins = ProjectRef(file("./"), "plugins")
 
 //lazy val banana = (project in new File(RootProject(uri("git://github.com/lucidworks/banana.git#v1.5.1")).build))
 //  .enablePlugins(JavaAppPackaging)
