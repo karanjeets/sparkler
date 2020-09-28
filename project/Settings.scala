@@ -32,10 +32,10 @@ object Settings {
   lazy val buildDir = "build"
   lazy val pluginsDir = "plugins"
   lazy val cmdAlias = addCommandAlias(
-    "package", "universal:packageBin"
-  ) ++ addCommandAlias(
-    "release", "release with-defaults"
-  )
+    "package", "universal:packageBin")
+//  ) ++ addCommandAlias(
+//    "release", "release with-defaults"
+//  )
   lazy val common = cmdAlias ++ Seq(
     maintainer in Universal := projectMaintainer,
     publish / skip := true,
