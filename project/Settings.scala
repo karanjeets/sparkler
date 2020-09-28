@@ -34,7 +34,7 @@ object Settings {
   lazy val cmdAlias = addCommandAlias(
     "package", "universal:packageBin"
   ) ++ addCommandAlias(
-    "release", "release with-defaults"
+    "releaseSilent", "release with-defaults"
   )
   lazy val common = cmdAlias ++ Seq(
     maintainer in Universal := projectMaintainer,
