@@ -74,8 +74,6 @@ lazy val api = (project in file("sparkler-api"))
     libraryDependencies ++= Seq(
       Dependencies.jsonSimple exclude("junit", "junit"),
       Dependencies.nutch exclude("*", "*"),
-//      Dependencies.Slf4j.api,
-//      Dependencies.Slf4j.log4j12,
       Dependencies.snakeYaml,
       Dependencies.Solr.solrj,
 
@@ -94,21 +92,16 @@ lazy val app = (project in file("sparkler-app"))
   .settings(
     Settings.common,
     name := "sparkler-app",
+    mainClass in (Compile, packageBin) := Some("edu.usc.irds.sparkler.Main"),
     libraryDependencies ++= Seq(
       // TODO: Only keep necessary dependencies. Rest all should be included as plugin. Eg: extractors
       Dependencies.args4j,
       Dependencies.commonsValidator,
       Dependencies.Jackson.databind exclude("org.slf4j", "slf4j-api"),
       Dependencies.Jackson.core,
-      //Dependencies.jsonSimple,
       Dependencies.kafkaClients exclude("org.slf4j", "slf4j-api"),
-      //Dependencies.nutch exclude("*", "*"),
       Dependencies.pf4j,
-      //Dependencies.Slf4j.api,
-      //Dependencies.Slf4j.log4j12,
-      //Dependencies.snakeYaml,
       Dependencies.Solr.core,
-      //Dependencies.Solr.solrj,
       Dependencies.Spark.core,
       Dependencies.Spark.sql,
       Dependencies.tikaParsers,

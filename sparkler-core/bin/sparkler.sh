@@ -13,4 +13,4 @@ fi
 
 # run
 # -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
-java -Xms1g -cp $DIR/conf:${LIB_DIR} -Dpf4j.pluginsDir=$DIR/plugins edu.usc.irds.sparkler.Main $@
+java -Xms1g -cp $DIR/conf:${LIB_DIR}/* -Dpf4j.pluginsDir=$DIR/plugins edu.usc.irds.sparkler.Main $@
