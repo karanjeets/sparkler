@@ -109,7 +109,8 @@ lazy val app = (project in file("sparkler-app"))
       //Dependencies.snakeYaml,
       Dependencies.Solr.core,
       //Dependencies.Solr.solrj,
-      Dependencies.sparkCore,
+      Dependencies.Spark.core,
+      Dependencies.Spark.sql,
       Dependencies.tikaParsers,
     ),
     packageBin in Universal := {

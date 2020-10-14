@@ -25,15 +25,15 @@ object Dependencies {
   object Jackson {
     private val group = "com.fasterxml.jackson.core"
     private val version = "2.6.5"
-    val core = group % "jackson-core" % version
-    val databind = group % "jackson-databind" % version
+    lazy val core = group % "jackson-core" % version
+    lazy val databind = group % "jackson-databind" % version
   }
   lazy val jBrowserDriver = "com.machinepublishers" % "jbrowserdriver" % "0.16.4"
   object Jetty {
     private val group = "org.eclipse.jetty"
     private val version = "9.4.0.v20161208"
-    val server = group % "jetty-server" % version
-    val servlet = group % "jetty-servlet" % version
+    lazy val server = group % "jetty-server" % version
+    lazy val servlet = group % "jetty-servlet" % version
   }
   lazy val jsonSimple = "com.googlecode.json-simple" % "json-simple" % "1.1.1"
   lazy val jUnit = "junit" % "junit" % "4.12"
@@ -45,16 +45,21 @@ object Dependencies {
   object Slf4j {
     private val group = "org.slf4j"
     private val version = "1.7.30"
-    val api = group % "slf4j-api" % version
-    val log4j12 = group % "slf4j-log4j12" % version
+    lazy val api = group % "slf4j-api" % version
+    lazy val log4j12 = group % "slf4j-log4j12" % version
   }
   lazy val snakeYaml = "org.yaml" % "snakeyaml" % "1.26"
   object Solr {
     private val group = "org.apache.solr"
     private val version = "8.5.0"
-    val core = group % "solr-core" % version
-    val solrj = group % "solr-solrj" % version
+    lazy val core = group % "solr-core" % version
+    lazy val solrj = group % "solr-solrj" % version
   }
-  lazy val sparkCore = "org.apache.spark" %% "spark-core" % "3.0.1" // pre-built version available @ https://spark.apache.org/downloads.html
+  object Spark {
+    private val group = "org.apache.spark"
+    private val version = "3.0.1" // pre-built version available @ https://spark.apache.org/downloads.html
+    lazy val core = group %% "spark-core" % version
+    lazy val sql = group %% "spark-sql" % version
+  }
   lazy val tikaParsers = "org.apache.tika" % "tika-parsers" % "1.24"
 }
